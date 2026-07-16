@@ -9,7 +9,7 @@
     <meta name="apple-mobile-web-app-title" content="SpazioCorsa">
     
     <!-- Tag fondamentale per l'icona dell'app su iPhone/iOS -->
-    <link rel="apple-touch-icon" href="logo.png">
+    <link class="apple-touch-icon" href="logo.png">
     
     <!-- Collegamento al Manifest per Android e altri browser -->
     <link rel="manifest" href="manifest.json">
@@ -905,7 +905,7 @@
                 <div class="action-card" onclick="nav('gestione')">
                     <div class="action-card-icon">🛠️</div>
                     <div class="action-card-title">Configurazione Officina</div>
-                    <div class="action-card-desc">Personalizza scatole, macro-famiglie e marchi.</div>
+                    <div class="action-card-desc">Personalizza scatole e macro-famiglie.</div>
                 </div>
             </div>
         </div>
@@ -919,15 +919,9 @@
                     <label>Nome Componente *</label>
                     <input type="text" id="f-nome" placeholder="es. Catena Shimano Ultegra 12v">
                 </div>
-                <div class="frow">
-                    <div class="fg">
-                        <label>Macro-Famiglia *</label>
-                        <select id="f-fam" onchange="updateFormVarieta()"></select>
-                    </div>
-                    <div class="fg">
-                        <label>Marchio / Specifica *</label>
-                        <select id="f-var"></select>
-                    </div>
+                <div class="fg">
+                    <label>Macro-Famiglia *</label>
+                    <select id="f-fam"></select>
                 </div>
             </div>
 
@@ -992,23 +986,12 @@
                             <button class="btn-tag-add" onclick="addLocation()">+</button>
                         </div>
                     </div>
-                    <div class="gest-box" style="margin-bottom:14px;">
+                    <div class="gest-box">
                         <h3>🗂 Macro-Famiglie</h3>
                         <div class="tags-list" id="fam-list"></div>
                         <div class="tag-add">
                             <input type="text" id="new-fam" placeholder="Nuova famiglia...">
                             <button class="btn-tag-add" onclick="addFamiglia()">+</button>
-                        </div>
-                    </div>
-                    <div class="gest-box">
-                        <h3>🏷 Marchi / Specifiche</h3>
-                        <div class="tags-list" id="var-list"></div>
-                        <div class="var-add-row">
-                            <select id="var-fam-select"></select>
-                        </div>
-                        <div class="tag-add">
-                            <input type="text" id="new-var" placeholder="Nuovo marchio...">
-                            <button class="btn-tag-add" onclick="addVarieta()">+</button>
                         </div>
                     </div>
                 </div>
@@ -1104,14 +1087,6 @@
             { id: 'f1', nome: 'Trasmissione' },
             { id: 'f2', nome: 'Impianto Frenante' },
             { id: 'f3', nome: 'Componentistica Ruote' }
-        ],
-        varieta: [
-            { id: 'v1', famId: 'f1', nome: 'Shimano' },
-            { id: 'v2', famId: 'f1', nome: 'SRAM' },
-            { id: 'v3', famId: 'f1', nome: 'Campagnolo' },
-            { id: 'v4', famId: 'f2', nome: 'Shimano Mineral' },
-            { id: 'v5', famId: 'f2', nome: 'SRAM DOT' },
-            { id: 'v6', famId: 'f3', nome: 'Tubeless Ready' }
         ]
     };
 
@@ -1131,7 +1106,6 @@
         if (!state.items) state.items = [];
         if (!state.locations) state.locations = [];
         if (!state.famiglie) state.famiglie = [];
-        if (!state.varieta) state.varieta = [];
     }
 
     window.nav = function(pageId) {
@@ -1211,30 +1185,22 @@
     window.renderAggiungiForm = function() {
         document.getElementById('f-loc').innerHTML = state.locations.map(l => `<option value="${l}">${l}</option>`).join('');
         document.getElementById('f-fam').innerHTML = state.famiglie.map(f => `<option value="${f.id}">${f.nome}</option>`).join('');
-        window.updateFormVarieta();
-    };
-
-    window.updateFormVarieta = function() {
-        const famId = document.getElementById('f-fam').value;
-        const filtered = state.varieta.filter(v => v.famId === famId);
-        document.getElementById('f-var').innerHTML = filtered.map(v => `<option value="${v.id}">${v.nome}</option>`).join('');
     };
 
     window.submitForm = function() {
         const nome = document.getElementById('f-nome').value.trim();
         const famId = document.getElementById('f-fam').value;
-        const varId = document.getElementById('f-var').value;
         const loc = document.getElementById('f-loc').value;
         const qty = parseInt(document.getElementById('f-qty').value);
         const scad = parseInt(document.getElementById('f-scad').value);
         const note = document.getElementById('f-note').value.trim();
 
-        if (!nome || isNaN(qty) || qty < 0 || isNaN(scad) || scad < 0 || !famId || !varId) {
+        if (!nome || isNaN(qty) || qty < 0 || isNaN(scad) || scad < 0 || !famId) {
             toast('⚠ Compila tutti i campi obbligatori con valori validi');
             return;
         }
 
-        state.items.push({ id: uid(), nome, location: loc, famId, varId, qty, scad: scad.toString(), note });
+        state.items.push({ id: uid(), nome, location: loc, famId, qty, scad: scad.toString(), note });
         document.getElementById('f-nome').value = '';
         document.getElementById('f-note').value = '';
         save();
@@ -1335,10 +1301,10 @@
         }).join('');
     };
 
-    let currentFamFilter = { famId: '', varId: '', locId: '' };
+    let currentFamFilter = { famId: '', locId: '' };
 
     window.openFamigliaView = function(famId) {
-        currentFamFilter = { famId: famId, varId: '', locId: '' };
+        currentFamFilter = { famId: famId, locId: '' };
         window.nav('location-view');
         renderFamigliaDetail();
     };
@@ -1348,10 +1314,8 @@
         if (!fam) return;
 
         const content = document.getElementById('location-view-content');
-        const vars = state.varieta.filter(v => v.famId === fam.id);
         let items = state.items.filter(it => !it.deleted && it.famId === fam.id);
         
-        if (currentFamFilter.varId) items = items.filter(it => it.varId === currentFamFilter.varId);
         if (currentFamFilter.locId) items = items.filter(it => it.location === currentFamFilter.locId);
 
         content.innerHTML = `
@@ -1363,10 +1327,6 @@
                 </div>
             </div>
             <div class="loc-filters">
-                <select onchange="filterFamView('var', this.value)">
-                    <option value="">Tutti i Marchi</option>
-                    ${vars.map(v => `<option value="${v.id}" ${v.id === currentFamFilter.varId ? 'selected' : ''}>${v.nome}</option>`).join('')}
-                </select>
                 <select onchange="filterFamView('loc', this.value)">
                     <option value="">Tutte le Scatole</option>
                     ${state.locations.map(l => `<option value="${l}" ${l === currentFamFilter.locId ? 'selected' : ''}>${l}</option>`).join('')}
@@ -1401,7 +1361,6 @@
     }
 
     window.filterFamView = function(type, val) {
-        if (type === 'var') currentFamFilter.varId = val;
         if (type === 'loc') currentFamFilter.locId = val;
         renderFamigliaDetail();
     };
@@ -1435,18 +1394,6 @@
                 <span class="tag-del" onclick="removeFamiglia('${f.id}')">×</span>
             </div>
         `).join('');
-        
-        document.getElementById('var-fam-select').innerHTML = state.famiglie.map(f => `<option value="${f.id}">${f.nome}</option>`).join('');
-        
-        document.getElementById('var-list').innerHTML = state.varieta.map(v => {
-            const fNome = state.famiglie.find(f => f.id === v.famId)?.nome || 'Sconosciuta';
-            return `
-                <div class="tag-item">
-                    🏷️ ${v.nome} <span class="tag-sub">${fNome}</span> 
-                    <span class="tag-edit-btn" onclick="editVarieta('${v.id}', '${v.nome}')">✏️</span>
-                    <span class="tag-del" onclick="removeVarieta('${v.id}')">×</span>
-                </div>`;
-        }).join('');
     };
 
     window.addLocation = function() {
@@ -1502,37 +1449,8 @@
     
     window.removeFamiglia = function(id) { 
         state.famiglie = state.famiglie.filter(x => x.id !== id); 
-        state.varieta = state.varieta.filter(x => x.famId !== id);
         state.items.forEach(it => {
             if (it.famId === id) it.famId = '';
-        });
-        save(); 
-        window.renderGestionePage(); 
-    };
-
-    window.addVarieta = function() {
-        const v = document.getElementById('new-var').value.trim();
-        const famId = document.getElementById('var-fam-select').value;
-        if (v && famId) { state.varieta.push({ id: 'v_' + Date.now(), famId, nome: v }); document.getElementById('new-var').value = ''; save(); window.renderGestionePage(); }
-    };
-
-    window.editVarieta = function(id, oldName) {
-        const newName = prompt("Modifica il marchio / specifica:", oldName);
-        if (newName && newName.trim() !== "" && newName.trim() !== oldName) {
-            const v = state.varieta.find(x => x.id === id);
-            if (v) {
-                v.nome = newName.trim();
-                save();
-                window.renderGestionePage();
-                toast('✓ Marchio aggiornato!');
-            }
-        }
-    };
-
-    window.removeVarieta = function(id) { 
-        state.varieta = state.varieta.filter(x => x.id !== id); 
-        state.items.forEach(it => {
-            if (it.varId === id) it.varId = '';
         });
         save(); 
         window.renderGestionePage(); 
