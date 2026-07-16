@@ -914,7 +914,7 @@
             <h2 class="page-title">Aggiungi Componente</h2>
             
             <div class="form-card">
-                <div class="form-card-title">Specifiche Ricambio</div>
+                <div class="form-card-title">Dettagli Ricambio</div>
                 <div class="fg">
                     <label>Nome Componente *</label>
                     <input type="text" id="f-nome" placeholder="es. Catena Shimano Ultegra 12v">
@@ -1133,8 +1133,8 @@
         closeMenu();
     };
 
-    window.toggleMenu = function(e) {
-        e.stopPropagation();
+    window.toggleMenu = function(event) {
+        event.stopPropagation();
         document.getElementById('headerMenu').classList.toggle('open');
     };
 
