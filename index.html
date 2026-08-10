@@ -1008,6 +1008,36 @@
                     </div>
                 </div>
             </div>
+
+            <div class="gest-section" style="margin-top:18px;">
+                <div class="gest-box">
+                    <h3>☁️ Sincronizzazione GitHub</h3>
+                    <div id="gh-sync-status" style="font-size:12px; color:var(--text3); margin-bottom:12px;">Non configurato</div>
+                    <div class="fg">
+                        <label>Utente / Organizzazione</label>
+                        <input type="text" id="gh-owner" placeholder="es. AlleRock">
+                    </div>
+                    <div class="fg">
+                        <label>Nome Repository</label>
+                        <input type="text" id="gh-repo" placeholder="es. spazio-corsa-data">
+                    </div>
+                    <div class="fg">
+                        <label>Percorso File</label>
+                        <input type="text" id="gh-path" placeholder="bike_parts.json" value="bike_parts.json">
+                    </div>
+                    <div class="fg">
+                        <label>Personal Access Token</label>
+                        <input type="password" id="gh-token" placeholder="ghp_...">
+                    </div>
+                    <div style="display:flex; gap:10px; margin-top:10px;">
+                        <button class="btn-tag-add" style="flex:1; height:40px;" onclick="saveGithubConfig()">💾 Salva</button>
+                        <button class="btn-tag-add" style="flex:1; height:40px;" onclick="manualSync()">🔄 Sincronizza ora</button>
+                    </div>
+                    <div style="display:flex; margin-top:10px;">
+                        <button class="btn-tag-add" style="flex:1; height:36px; background:var(--red-bg); color:var(--red);" onclick="disconnectGithub()">Disconnetti</button>
+                    </div>
+                </div>
+            </div>
         </div>
 
         <div id="page-location-view" class="page">
@@ -1108,7 +1138,155 @@
     }
 
     function save() {
+        state._lastModified = Date.now();
         localStorage.setItem('bike_parts_state', JSON.stringify(state));
+        scheduleGithubPush();
+    }
+
+    // ===== SINCRONIZZAZIONE GITHUB =====
+    const GH_CONFIG_KEY = 'spazio_corsa_gh_config';
+
+    function getGithubConfig() {
+        try { return JSON.parse(localStorage.getItem(GH_CONFIG_KEY)) || null; } catch (e) { return null; }
+    }
+
+    function b64EncodeUnicode(str) { return btoa(unescape(encodeURIComponent(str))); }
+    function b64DecodeUnicode(str) { return decodeURIComponent(escape(atob(str))); }
+
+    function updateSyncStatusUI(msg) {
+        const el = document.getElementById('gh-sync-status');
+        if (el) el.textContent = msg;
+    }
+
+    async function githubGetFile(cfg) {
+        const url = `https://api.github.com/repos/${cfg.owner}/${cfg.repo}/contents/${encodeURIComponent(cfg.path)}`;
+        const res = await fetch(url, {
+            headers: { 'Authorization': `token ${cfg.token}`, 'Accept': 'application/vnd.github+json' }
+        });
+        if (res.status === 404) return null;
+        if (!res.ok) throw new Error('Lettura GitHub fallita: ' + res.status);
+        const data = await res.json();
+        const content = b64DecodeUnicode(data.content.replace(/\n/g, ''));
+        return { sha: data.sha, json: JSON.parse(content) };
+    }
+
+    async function githubPutFile(cfg, obj, sha) {
+        const url = `https://api.github.com/repos/${cfg.owner}/${cfg.repo}/contents/${encodeURIComponent(cfg.path)}`;
+        const body = {
+            message: 'Sync Spazio Corsa ' + new Date().toISOString(),
+            content: b64EncodeUnicode(JSON.stringify(obj, null, 2))
+        };
+        if (sha) body.sha = sha;
+        const res = await fetch(url, {
+            method: 'PUT',
+            headers: { 'Authorization': `token ${cfg.token}`, 'Accept': 'application/vnd.github+json' },
+            body: JSON.stringify(body)
+        });
+        if (!res.ok) throw new Error('Scrittura GitHub fallita: ' + res.status);
+        return await res.json();
+    }
+
+    let ghSyncInProgress = false;
+
+    async function pullThenPush(showToast) {
+        const cfg = getGithubConfig();
+        if (!cfg) { updateSyncStatusUI('Non configurato'); return; }
+        if (ghSyncInProgress) return;
+        ghSyncInProgress = true;
+        updateSyncStatusUI('🔄 Sincronizzazione in corso...');
+        try {
+            const remote = await githubGetFile(cfg);
+            const remoteTs = (remote && remote.json && remote.json._lastModified) || 0;
+            const localTs = state._lastModified || 0;
+
+            if (remote && remoteTs > localTs) {
+                state = remote.json;
+                fixStateStructure();
+                localStorage.setItem('bike_parts_state', JSON.stringify(state));
+                const activePage = document.querySelector('.page.active');
+                const pageId = activePage ? activePage.id.replace('page-', '') : 'home';
+                window.nav(pageId);
+                updateSyncStatusUI('✓ Dati aggiornati da GitHub — ' + new Date().toLocaleTimeString('it-IT'));
+                if (showToast) toast('✓ Dati aggiornati da GitHub');
+            } else {
+                state._lastModified = Date.now();
+                await githubPutFile(cfg, state, remote ? remote.sha : undefined);
+                localStorage.setItem('bike_parts_state', JSON.stringify(state));
+                updateSyncStatusUI('✓ Sincronizzato — ' + new Date().toLocaleTimeString('it-IT'));
+                if (showToast) toast('✓ Sincronizzato con GitHub');
+            }
+        } catch (err) {
+            console.error(err);
+            updateSyncStatusUI('⚠ Errore sincronizzazione (controlla token/repo)');
+            if (showToast) toast('⚠ Errore sincronizzazione GitHub');
+        } finally {
+            ghSyncInProgress = false;
+        }
+    }
+
+    let ghPushTimer = null;
+    function scheduleGithubPush() {
+        const cfg = getGithubConfig();
+        if (!cfg) return;
+        clearTimeout(ghPushTimer);
+        ghPushTimer = setTimeout(async () => {
+            const c = getGithubConfig();
+            if (!c) return;
+            updateSyncStatusUI('🔄 Sincronizzazione in corso...');
+            try {
+                const remote = await githubGetFile(c);
+                await githubPutFile(c, state, remote ? remote.sha : undefined);
+                updateSyncStatusUI('✓ Sincronizzato — ' + new Date().toLocaleTimeString('it-IT'));
+            } catch (err) {
+                console.error(err);
+                updateSyncStatusUI('⚠ Errore sincronizzazione');
+            }
+        }, 1500);
+    }
+
+    window.saveGithubConfig = function() {
+        const owner = document.getElementById('gh-owner').value.trim();
+        const repo = document.getElementById('gh-repo').value.trim();
+        const path = document.getElementById('gh-path').value.trim() || 'bike_parts.json';
+        const token = document.getElementById('gh-token').value.trim();
+        if (!owner || !repo || !token) { toast('⚠ Compila utente, repo e token'); return; }
+        localStorage.setItem(GH_CONFIG_KEY, JSON.stringify({ owner, repo, path, token }));
+        toast('✓ Configurazione salvata');
+        pullThenPush(true);
+    };
+
+    window.manualSync = function() {
+        const cfg = getGithubConfig();
+        if (!cfg) { toast('⚠ Configura prima la sincronizzazione'); return; }
+        pullThenPush(true);
+    };
+
+    window.disconnectGithub = function() {
+        if (!confirm('Disconnettere la sincronizzazione GitHub su questo dispositivo?')) return;
+        localStorage.removeItem(GH_CONFIG_KEY);
+        const owner = document.getElementById('gh-owner'); if (owner) owner.value = '';
+        const repo = document.getElementById('gh-repo'); if (repo) repo.value = '';
+        const token = document.getElementById('gh-token'); if (token) token.value = '';
+        updateSyncStatusUI('Non configurato');
+        toast('Sincronizzazione disattivata');
+    };
+
+    function fillGithubConfigUI() {
+        const cfg = getGithubConfig();
+        const ownerEl = document.getElementById('gh-owner');
+        const repoEl = document.getElementById('gh-repo');
+        const pathEl = document.getElementById('gh-path');
+        const tokenEl = document.getElementById('gh-token');
+        if (!ownerEl) return;
+        if (cfg) {
+            ownerEl.value = cfg.owner || '';
+            repoEl.value = cfg.repo || '';
+            pathEl.value = cfg.path || 'bike_parts.json';
+            tokenEl.value = cfg.token || '';
+            updateSyncStatusUI('Configurato — ultima sincronizzazione: ' + (state._lastModified ? new Date(state._lastModified).toLocaleTimeString('it-IT') : '—'));
+        } else {
+            updateSyncStatusUI('Non configurato');
+        }
     }
 
     function fixStateStructure() {
@@ -1451,6 +1629,8 @@
                 <span class="tag-del" onclick="removeFamiglia('${f.id}')">×</span>
             </div>
         `).join('');
+
+        fillGithubConfigUI();
     };
 
     window.addLocation = function() {
@@ -1683,6 +1863,7 @@
     window.addEventListener('DOMContentLoaded', () => {
         load();
         window.renderHome();
+        pullThenPush(false);
     });
 </script>
 </body>

@@ -1,4 +1,4 @@
-const CACHE_NAME = 'spaziocorsa-v1';
+const CACHE_NAME = 'spaziocorsa-v2';
 const ASSETS = [
   './',
   './index.html',
