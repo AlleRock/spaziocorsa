@@ -1,0 +1,26 @@
+{
+  "items": [
+    {
+      "id": "id_dqilx2pm1",
+      "nome": "Cartucce Pompetta",
+      "location": "Camera, Armadio",
+      "famId": "f_1784240764432",
+      "qty": 3,
+      "scad": "1",
+      "note": ""
+    }
+  ],
+  "locations": [
+    "Camera, Armadio"
+  ],
+  "famiglie": [
+    {
+      "id": "f_1784240764432",
+      "nome": "Ruote"
+    }
+  ],
+  "settings": {
+    "threshold": 2
+  },
+  "_lastModified": 1786394944599
+}
