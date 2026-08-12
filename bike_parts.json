@@ -8,6 +8,14 @@
       "qty": 3,
       "scad": "1",
       "note": ""
+    },
+    {
+      "id": "id_4jq1mlvwv",
+      "nome": "CR 2450",
+      "location": "Camera, Armadio",
+      "famId": "f_1786525552589",
+      "qty": 1,
+      "note": "scadenza 02/2033"
     }
   ],
   "locations": [
@@ -27,5 +35,5 @@
   "settings": {
     "threshold": 2
   },
-  "_lastModified": 1786525563433
+  "_lastModified": 1786525797301
 }
