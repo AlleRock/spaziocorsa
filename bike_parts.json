@@ -24,6 +24,14 @@
       "famId": "f_1786525552589",
       "qty": 6,
       "note": ""
+    },
+    {
+      "id": "id_r5oo7ejme",
+      "nome": "Tappabuchi",
+      "location": "Camera, Armadio",
+      "famId": "f_1786547657952",
+      "qty": 1,
+      "note": "30cm circa"
     }
   ],
   "locations": [
@@ -47,5 +55,5 @@
   "settings": {
     "threshold": 1
   },
-  "_lastModified": 1786547657952
+  "_lastModified": 1786547740070
 }
