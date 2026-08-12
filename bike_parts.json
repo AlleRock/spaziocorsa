@@ -50,10 +50,14 @@
     {
       "id": "f_1786547657952",
       "nome": "Vestiario"
+    },
+    {
+      "id": "f_1786547780211",
+      "nome": "Pulizia"
     }
   ],
   "settings": {
     "threshold": 1
   },
-  "_lastModified": 1786547757743
+  "_lastModified": 1786547780211
 }
