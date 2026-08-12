@@ -16,6 +16,14 @@
       "famId": "f_1786525552589",
       "qty": 1,
       "note": "scadenza 02/2033"
+    },
+    {
+      "id": "id_o7uhj06zt",
+      "nome": "CR 2032",
+      "location": "Camera, Armadio",
+      "famId": "f_1786525552589",
+      "qty": 6,
+      "note": ""
     }
   ],
   "locations": [
@@ -35,5 +43,5 @@
   "settings": {
     "threshold": 2
   },
-  "_lastModified": 1786525797301
+  "_lastModified": 1786525883413
 }
