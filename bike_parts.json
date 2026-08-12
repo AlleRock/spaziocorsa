@@ -56,6 +56,14 @@
       "famId": "f_1786547780211",
       "qty": 1,
       "note": ""
+    },
+    {
+      "id": "id_6xzsjdkxx",
+      "nome": "Canyon Derailleur Hanger No. 12 Road",
+      "location": "Camera, Armadio",
+      "famId": "f_1786547930187",
+      "qty": 1,
+      "note": ""
     }
   ],
   "locations": [
@@ -87,5 +95,5 @@
   "settings": {
     "threshold": 1
   },
-  "_lastModified": 1786547930187
+  "_lastModified": 1786547948603
 }
