@@ -78,10 +78,14 @@
     {
       "id": "f_1786547780211",
       "nome": "Pulizia"
+    },
+    {
+      "id": "f_1786547930187",
+      "nome": "Guarnitura"
     }
   ],
   "settings": {
     "threshold": 1
   },
-  "_lastModified": 1786547895988
+  "_lastModified": 1786547930187
 }
