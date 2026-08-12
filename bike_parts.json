@@ -48,6 +48,14 @@
       "famId": "f_1786547780211",
       "qty": 1,
       "note": ""
+    },
+    {
+      "id": "id_dp3epm9w1",
+      "nome": "Sgrassacatene",
+      "location": "Cantina",
+      "famId": "f_1786547780211",
+      "qty": 1,
+      "note": ""
     }
   ],
   "locations": [
@@ -75,5 +83,5 @@
   "settings": {
     "threshold": 1
   },
-  "_lastModified": 1786547867296
+  "_lastModified": 1786547895988
 }
