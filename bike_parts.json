@@ -17,10 +17,14 @@
     {
       "id": "f_1784240764432",
       "nome": "Ruote"
+    },
+    {
+      "id": "f_1786525552589",
+      "nome": "Elettronica"
     }
   ],
   "settings": {
     "threshold": 2
   },
-  "_lastModified": 1786399616044
+  "_lastModified": 1786525552589
 }
