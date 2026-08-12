@@ -40,6 +40,14 @@
       "famId": "f_1786547780211",
       "qty": 1,
       "note": ""
+    },
+    {
+      "id": "id_sh5znc1tk",
+      "nome": "Lubrificante",
+      "location": "Cantina",
+      "famId": "f_1786547780211",
+      "qty": 1,
+      "note": ""
     }
   ],
   "locations": [
@@ -67,5 +75,5 @@
   "settings": {
     "threshold": 1
   },
-  "_lastModified": 1786547833970
+  "_lastModified": 1786547867296
 }
