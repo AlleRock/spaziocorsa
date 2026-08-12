@@ -11,7 +11,8 @@
     }
   ],
   "locations": [
-    "Camera, Armadio"
+    "Camera, Armadio",
+    "Cantina"
   ],
   "famiglie": [
     {
@@ -26,5 +27,5 @@
   "settings": {
     "threshold": 2
   },
-  "_lastModified": 1786525552589
+  "_lastModified": 1786525563433
 }
