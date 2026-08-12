@@ -32,6 +32,14 @@
       "famId": "f_1786547657952",
       "qty": 1,
       "note": "30cm circa"
+    },
+    {
+      "id": "id_1wh05rqrc",
+      "nome": "Spray Pulente",
+      "location": "Cantina",
+      "famId": "f_1786547780211",
+      "qty": 1,
+      "note": ""
     }
   ],
   "locations": [
@@ -59,5 +67,5 @@
   "settings": {
     "threshold": 1
   },
-  "_lastModified": 1786547780211
+  "_lastModified": 1786547833970
 }
