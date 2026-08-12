@@ -38,10 +38,14 @@
     {
       "id": "f_1786525552589",
       "nome": "Elettronica"
+    },
+    {
+      "id": "f_1786547657952",
+      "nome": "Vestiario"
     }
   ],
   "settings": {
     "threshold": 1
   },
-  "_lastModified": 1786525945306
+  "_lastModified": 1786547657952
 }
