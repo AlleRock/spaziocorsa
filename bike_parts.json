@@ -64,6 +64,14 @@
       "famId": "f_1786547930187",
       "qty": 1,
       "note": ""
+    },
+    {
+      "id": "id_99zmd8q85",
+      "nome": "CR 2032 Qwak",
+      "location": "Camera, Armadio",
+      "famId": "f_1786525552589",
+      "qty": 4,
+      "note": "Scadenza 08/2035"
     }
   ],
   "locations": [
@@ -95,5 +103,5 @@
   "settings": {
     "threshold": 1
   },
-  "_lastModified": 1789675375237
+  "_lastModified": 1789675432381
 }
