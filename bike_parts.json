@@ -5,7 +5,7 @@
       "nome": "Cartucce Pompetta",
       "location": "Camera, Armadio",
       "famId": "f_1784240764432",
-      "qty": 3,
+      "qty": 2,
       "scad": "1",
       "note": ""
     },
@@ -103,5 +103,5 @@
   "settings": {
     "threshold": 1
   },
-  "_lastModified": 1789675432381
+  "_lastModified": 1790402193971
 }
