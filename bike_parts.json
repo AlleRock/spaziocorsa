@@ -72,6 +72,14 @@
       "famId": "f_1786525552589",
       "qty": 4,
       "note": "Scadenza 08/2035"
+    },
+    {
+      "id": "id_fhdeqt6ux",
+      "nome": "Camera Aria",
+      "location": "Camera, Armadio",
+      "famId": "f_1784240764432",
+      "qty": 2,
+      "note": "Specialized airlock 700x20/28 v. presta 40mm"
     }
   ],
   "locations": [
@@ -103,5 +111,5 @@
   "settings": {
     "threshold": 1
   },
-  "_lastModified": 1791214847687
+  "_lastModified": 1791215395128
 }
