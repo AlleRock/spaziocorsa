@@ -22,7 +22,7 @@
       "nome": "CR 2032",
       "location": "Camera, Armadio",
       "famId": "f_1786525552589",
-      "qty": 5,
+      "qty": 4,
       "note": ""
     },
     {
@@ -111,5 +111,5 @@
   "settings": {
     "threshold": 1
   },
-  "_lastModified": 1794667029963
+  "_lastModified": 1794667075997
 }
